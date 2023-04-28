@@ -1,0 +1,57 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:14.7
+    container_name: postgress
+    restart: always
+    ports:
+      - 8080:5432
+    environment:
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_USER: admin
+      POSTGRES_DB: openproject
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+
+  openproject:
+    image: openproject/community:11
+    container_name: openproject
+    #restart: unless-stopped
+    restart: always
+    ports:
+      - 7070:80
+    environment:
+      BPFS_STORAGE: database
+      #AUTO_MIGRATE: "true" 
+      #CI_EMAIL: jose.elias.lopez.camargo@uabc.edu.mx
+      #CI_PASSWORD: "!Hola1234"
+      DATABASE_URL: postgres://admin:mysecretpassword@postgress:5432/openproject
+    depends_on:
+      - db
+  
+    volumes:
+      #- /srv/dev-disk-by-label-Files/Config/OpenProject/Config:/var/openproject/pgdata
+      #- /srv/dev-disk-by-label-Files/Config/OpenProject/Assets:/var/openproject/assets
+      - ./Op/pgdata:/var/openproject/pgdata
+      - ./Op/assets:/var/openproject/assets
+  
+
+
+
+
+
+
+
+#volumes:
+      #- /srv/dev-disk-by-label-Files/Config/OpenProject/Config:/var/openproject/pgdata
+      #- /srv/dev-disk-by-label-Files/Config/OpenProject/Assets:/var/openproject/assets
+#environment:
+#PUID=998 
+#PGID=100
+#- SECRET_KEY_BASE=QSY608qLYd1wFm4ADkyOyd3OUlZpiwyh
+
+
+
+# use this command in a linux ssh to generate a secret for the environmental variable:
+# head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32 ; echo ''

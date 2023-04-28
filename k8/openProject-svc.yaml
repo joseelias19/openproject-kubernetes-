@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: openproject-service
+  namespace: default
+spec:
+  #type: NodePort
+  type: ClusterIP
+  selector:
+    app: openproject
+  ports:
+    - protocol: TCP
+      port: 7070
+      targetPort: 80
+      #nodePort: 30000
+      name: http  
